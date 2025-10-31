@@ -1,4 +1,4 @@
-package ru.aston.hometask4.dto;
+package ru.aston.user.dto;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.Max;

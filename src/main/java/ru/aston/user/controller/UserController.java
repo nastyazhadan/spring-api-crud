@@ -1,11 +1,11 @@
-package ru.aston.hometask4.controller;
+package ru.aston.user.controller;
 
-import ru.aston.hometask4.dto.UserDTO;
-import ru.aston.hometask4.entity.User;
-import ru.aston.hometask4.service.UserService;
-import ru.aston.hometask4.util.UserErrorResponse;
-import ru.aston.hometask4.util.UserNotCreatedException;
-import ru.aston.hometask4.util.UserNotUpdatedException;
+import ru.aston.user.dto.UserDTO;
+import ru.aston.user.entity.User;
+import ru.aston.user.service.core.UserService;
+import ru.aston.user.util.UserErrorResponse;
+import ru.aston.user.util.UserNotCreatedException;
+import ru.aston.user.util.UserNotUpdatedException;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.DeleteMapping;

@@ -1,18 +1,21 @@
-package ru.aston.hometask4.service;
+package ru.aston.user.service.core;
 
-import ru.aston.hometask4.entity.User;
-import ru.aston.hometask4.repository.UserRepository;
-import ru.aston.hometask4.util.UserNotUpdatedException;
-import ru.aston.hometask4.util.UserNotCreatedException;
-import ru.aston.hometask4.util.UserNotDeletedException;
-import ru.aston.hometask4.util.UserNotFoundException;
+import ru.aston.common.dto.UserEvent;
+import ru.aston.common.dto.UserEventType;
+import ru.aston.user.service.messaging.UserEventProducer;
+import ru.aston.user.entity.User;
+import ru.aston.user.repository.UserRepository;
+import ru.aston.user.util.UserNotUpdatedException;
+import ru.aston.user.util.UserNotCreatedException;
+import ru.aston.user.util.UserNotDeletedException;
+import ru.aston.user.util.UserNotFoundException;
 
 import jakarta.validation.ConstraintViolationException;
-import org.springframework.context.annotation.Lazy;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.DataAccessException;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import java.util.List;
 
@@ -21,11 +24,13 @@ import java.util.List;
 @Transactional(readOnly = true)
 public class UserService {
     private final UserRepository userRepository;
+    private final UserEventProducer producer;
     private final UserService self;
 
     @Autowired
-    public UserService(UserRepository userRepository, @Lazy UserService self) {
+    public UserService(UserRepository userRepository, UserEventProducer producer, @Lazy UserService self) {
         this.userRepository = userRepository;
+        this.producer = producer;
         this.self = self;
     }
 
@@ -43,7 +48,9 @@ public class UserService {
     @Transactional
     public User createUser(User user) {
         try {
-            return userRepository.save(user);
+            User savedUser = userRepository.save(user);
+            producer.sendEvent(new UserEvent(savedUser.getEmail(), UserEventType.CREATED));
+            return savedUser;
         } catch (DataIntegrityViolationException | ConstraintViolationException e) {
             throw new UserNotCreatedException("User with this email " + user.getEmail() + " already exists");
         } catch (DataAccessException dataAccessException) {
@@ -71,7 +78,9 @@ public class UserService {
     @Transactional
     public void deleteUser(int id) {
         try {
-            userRepository.delete(self.getUserById(id));
+            User user = self.getUserById(id);
+            userRepository.delete(user);
+            producer.sendEvent(new UserEvent(user.getEmail(), UserEventType.DELETED));
         } catch (DataAccessException | UserNotFoundException exception) {
             throw exception;
         } catch (Exception e) {

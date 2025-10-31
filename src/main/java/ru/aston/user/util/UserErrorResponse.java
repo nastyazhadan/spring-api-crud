@@ -1,4 +1,4 @@
-package ru.aston.hometask4.util;
+package ru.aston.user.util;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.BindingResult;
@@ -13,7 +13,7 @@ public class UserErrorResponse {
     private String message;
     @Getter @Setter
     private LocalDateTime timestamp;
-    @Getter  @Setter
+    @Getter @Setter
     private HttpStatus status;
 
     public UserErrorResponse(String message, HttpStatus status) {

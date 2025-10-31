@@ -1,11 +1,13 @@
-package ru.aston.hometask4.util;
+package ru.aston.user.util;
 
 import lombok.extern.slf4j.Slf4j;
+import org.hibernate.exception.JDBCConnectionException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.dao.DataAccessException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.transaction.CannotCreateTransactionException;
 
 
 @Slf4j
@@ -20,7 +22,7 @@ public class UserExceptionHandler {
     }
 
     @ExceptionHandler(UserNotCreatedException.class)
-    private ResponseEntity<UserErrorResponse> handleNotUpdated(UserNotCreatedException e) {
+    private ResponseEntity<UserErrorResponse> handleNotCreated(UserNotCreatedException e) {
         log.warn("User not created: {}", e.getMessage());
 
         return buildResponse(e.getMessage(), HttpStatus.BAD_REQUEST);
@@ -40,8 +42,12 @@ public class UserExceptionHandler {
         return buildResponse(e.getMessage(), HttpStatus.BAD_REQUEST);
     }
 
-    @ExceptionHandler(DataAccessException.class)
-    public ResponseEntity<UserErrorResponse> handleDatabaseError(DataAccessException e) {
+    @ExceptionHandler({
+            DataAccessException.class,
+            CannotCreateTransactionException.class,
+            JDBCConnectionException.class
+    })
+    public ResponseEntity<UserErrorResponse> handleDatabaseError(Exception e) {
         log.error("Database error occurred", e);
 
         return buildResponse("A server error occurred. Please try again later.",

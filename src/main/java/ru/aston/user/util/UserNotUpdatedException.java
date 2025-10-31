@@ -1,4 +1,4 @@
-package ru.aston.hometask4.util;
+package ru.aston.user.util;
 
 
 public class UserNotUpdatedException extends RuntimeException {

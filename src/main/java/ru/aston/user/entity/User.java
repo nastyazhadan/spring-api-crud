@@ -1,4 +1,4 @@
-package ru.aston.hometask4.entity;
+package ru.aston.user.entity;
 
 import org.hibernate.annotations.CreationTimestamp;
 import jakarta.persistence.Column;
@@ -37,4 +37,13 @@ public class User {
     @CreationTimestamp
     @Column(name = "created_at", columnDefinition = "TIMESTAMP(0)")
     private LocalDateTime createdAt;
+
+    public User() {
+    }
+
+    public User(String name, String email, Integer age) {
+        this.name = name;
+        this.email = email;
+        this.age = age;
+    }
 }
