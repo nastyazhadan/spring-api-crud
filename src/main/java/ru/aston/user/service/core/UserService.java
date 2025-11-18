@@ -1,8 +1,5 @@
 package ru.aston.user.service.core;
 
-import ru.aston.common.dto.UserEvent;
-import ru.aston.common.dto.UserEventType;
-import ru.aston.user.service.messaging.UserEventProducer;
 import ru.aston.user.entity.User;
 import ru.aston.user.repository.UserRepository;
 import ru.aston.user.util.UserNotUpdatedException;
@@ -24,13 +21,11 @@ import java.util.List;
 @Transactional(readOnly = true)
 public class UserService {
     private final UserRepository userRepository;
-    private final UserEventProducer producer;
     private final UserService self;
 
     @Autowired
-    public UserService(UserRepository userRepository, UserEventProducer producer, @Lazy UserService self) {
+    public UserService(UserRepository userRepository, @Lazy UserService self) {
         this.userRepository = userRepository;
-        this.producer = producer;
         this.self = self;
     }
 
@@ -48,9 +43,7 @@ public class UserService {
     @Transactional
     public User createUser(User user) {
         try {
-            User savedUser = userRepository.save(user);
-            producer.sendEvent(new UserEvent(savedUser.getEmail(), UserEventType.CREATED));
-            return savedUser;
+            return userRepository.save(user);
         } catch (DataIntegrityViolationException | ConstraintViolationException e) {
             throw new UserNotCreatedException("User with this email " + user.getEmail() + " already exists");
         } catch (DataAccessException dataAccessException) {
@@ -80,7 +73,6 @@ public class UserService {
         try {
             User user = self.getUserById(id);
             userRepository.delete(user);
-            producer.sendEvent(new UserEvent(user.getEmail(), UserEventType.DELETED));
         } catch (DataAccessException | UserNotFoundException exception) {
             throw exception;
         } catch (Exception e) {
