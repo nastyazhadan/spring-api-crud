@@ -1,20 +1,14 @@
 package ru.aston.user;
 
-import ru.aston.common.dto.UserEvent;
-
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Test;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.http.MediaType;
-import org.springframework.context.annotation.Bean;
-import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import static org.mockito.Mockito.mock;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.greaterThanOrEqualTo;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
@@ -30,15 +24,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 public class UserServiceAppTest {
     @Autowired
     private MockMvc mockMvc;
-
-    @TestConfiguration
-    static class KafkaMockConfig {
-        @Bean
-        @SuppressWarnings("unchecked")
-        KafkaTemplate<String, UserEvent> kafkaTemplate() {
-            return (KafkaTemplate<String, UserEvent>) mock(KafkaTemplate.class);
-        }
-    }
 
     @Test
     void shouldGetAllUsers() throws Exception {

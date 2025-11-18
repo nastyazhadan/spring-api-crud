@@ -5,7 +5,6 @@ import ru.aston.user.repository.UserRepository;
 import ru.aston.user.util.UserNotFoundException;
 import ru.aston.user.util.UserNotCreatedException;
 import ru.aston.user.util.UserNotUpdatedException;
-import ru.aston.user.service.messaging.UserEventProducer;
 
 import java.util.Optional;
 import org.mockito.Mock;
@@ -29,9 +28,6 @@ class UserServiceTest {
     private UserRepository userRepository;
 
     @Mock
-    private UserEventProducer producer;
-
-    @Mock
     private UserService self;
 
     @InjectMocks
@@ -47,7 +43,6 @@ class UserServiceTest {
         assertEquals("Lena", created.getName());
         assertEquals("lena@mail.ru", created.getEmail());
         verify(userRepository, times(1)).save(any(User.class));
-        verify(producer, times(1)).sendEvent(any());
     }
 
     @Test
@@ -130,7 +125,6 @@ class UserServiceTest {
         userService.deleteUser(1);
 
         verify(userRepository, times(1)).delete(user);
-        verify(producer, times(1)).sendEvent(any());
     }
 
     @Test
@@ -140,6 +134,5 @@ class UserServiceTest {
         assertThrows(UserNotFoundException.class, () -> userService.deleteUser(999));
 
         verify(userRepository, times(0)).delete(any());
-        verify(producer, times(0)).sendEvent(any());
     }
 }
