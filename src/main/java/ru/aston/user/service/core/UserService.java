@@ -43,8 +43,7 @@ public class UserService {
     @Transactional
     public User createUser(User user) {
         try {
-            User savedUser = userRepository.save(user);
-            return savedUser;
+            return userRepository.save(user);
         } catch (DataIntegrityViolationException | ConstraintViolationException e) {
             throw new UserNotCreatedException("User with this email " + user.getEmail() + " already exists");
         } catch (DataAccessException dataAccessException) {
